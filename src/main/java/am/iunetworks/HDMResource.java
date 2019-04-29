@@ -18,13 +18,15 @@ import java.util.List;
 @RestController("/hdm")
 public class HDMResource {
 
-    ECRClient ecrSampleClient;
+    private ECRClient ecrSampleClient;
 
 
     @PostMapping("/connect")
-    public void connect( @RequestParam("ip") String ip, @RequestParam("port") int port, @RequestParam("password") String password) throws IOException, NoSuchAlgorithmException {
+    @ResponseBody
+    public Response<Object> connect(@RequestParam("ip") String ip, @RequestParam("port") int port, @RequestParam("password") String password) throws IOException, NoSuchAlgorithmException {
         ecrSampleClient = new ECRSampleClient(ip, port, password);
         ecrSampleClient.connect();
+        return new Response<>(200, null);
     }
 
     @GetMapping("/getOperatorsAndDeps")
@@ -34,30 +36,35 @@ public class HDMResource {
     }
 
     @PostMapping("/printFiscalReport")
-    public void printFiscalReport(@RequestParam("reportType") int reportType,
-                                  @RequestParam("startDate") Date startDate,
-                                  @RequestParam("endDate") Date endDate,
-                                  @RequestParam("deptId") Integer deptId,
-                                  @RequestParam("cashierId") Integer cashierId,
-                                  @RequestParam("transactionTypeId") Integer transactionTypeId) throws Exception {
+    @ResponseBody
+    public Response<Object> printFiscalReport(@RequestParam("reportType") int reportType,
+                                              @RequestParam("startDate") Date startDate,
+                                              @RequestParam("endDate") Date endDate,
+                                              @RequestParam("deptId") Integer deptId,
+                                              @RequestParam("cashierId") Integer cashierId,
+                                              @RequestParam("transactionTypeId") Integer transactionTypeId) throws Exception {
         ecrSampleClient.printFiscalReport(reportType, startDate, endDate, deptId, cashierId, transactionTypeId);
+        return new Response<>(200, null);
     }
 
     @PostMapping("/operatorLogin")
+    @ResponseBody
     public OperatorLoginResponse operatorLogin(@RequestParam("cashierId") int cashierId,
                                                @RequestParam("cashierPin") String cashierPin) throws NoSuchPaddingException, IOException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, ECRException {
         return ecrSampleClient.operatorLogin(cashierId, cashierPin);
     }
 
     @PostMapping("/printPrePaymentReceipt")
+    @ResponseBody
     public PrintReceiptResponse printPrePaymentReceipt(@RequestParam("printMode") int printMode,
                                                        @RequestParam("paidAmount") double paidAmount,
                                                        @RequestParam("paidAmountCard") double paidAmountCard,
                                                        @RequestParam("useExtPOS") boolean useExtPOS) throws Exception {
-        return ecrSampleClient.printPrePaymentReceipt(printMode, paidAmount, paidAmount, useExtPOS);
+        return ecrSampleClient.printPrePaymentReceipt(printMode, paidAmount, paidAmountCard, useExtPOS);
     }
 
     @PostMapping("/printReceipt")
+    @ResponseBody
     public PrintReceiptResponse printReceipt(@RequestParam("printMode") int printMode,
                                              @RequestParam("items") List<Item> items,
                                              @RequestParam("paidAmount") double paidAmount,
@@ -66,44 +73,71 @@ public class HDMResource {
         return ecrSampleClient.printReceipt(printMode, items, paidAmount, partialAmount, prePaymentAmount);
     }
 
-    public PrintReceiptResponse printReceipt(int printMode, List<Item> items, double paidAmount, double partialAmount, double prePaymentAmount, double paidAmountCard, boolean useExtPOS) throws Exception {
-        return null;
+    @PostMapping("/printReceiptCard")
+    @ResponseBody
+    public PrintReceiptResponse printReceipt(
+            @RequestParam("printMode") int printMode,
+            @RequestParam("items") List<Item> items,
+            @RequestParam("paidAmount") double paidAmount,
+            @RequestParam("partialAmount") double partialAmount,
+            @RequestParam("prePaymentAmount") double prePaymentAmount,
+            @RequestParam("paidAmountCard") double paidAmountCard,
+            @RequestParam("useExtPOS") boolean useExtPOS) throws Exception {
+        return ecrSampleClient.printReceipt(printMode, items, paidAmount, partialAmount, prePaymentAmount, paidAmountCard, useExtPOS);
     }
 
-
-    public GetReceiptResponse getReceipt(String receiptId, String crn) throws Exception {
-        return null;
+    @PostMapping("/getReceipt")
+    @ResponseBody
+    public GetReceiptResponse getReceipt(
+            @RequestParam("receiptId") String receiptId,
+            @RequestParam("crn") String crn
+    ) throws Exception {
+        return ecrSampleClient.getReceipt(receiptId, crn);
     }
 
-
-    public void printLastReceipt() throws NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, IOException, ECRException {
-
+    @PostMapping("/printLastReceipt")
+    @ResponseBody
+    public Response<Object> printLastReceipt() throws NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, IOException, ECRException {
+        ecrSampleClient.printLastReceipt();
+        return new Response<>(200, null);
     }
 
-
+    @PostMapping("/printReturnReceipt")
+    @ResponseBody
     public PrintReceiptResponse printReturnReceipt(PrintReturnReceiptRequest request, int cashierId, int deptId) throws NoSuchPaddingException, IOException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, ECRException {
-        return null;
+        return ecrSampleClient.printReturnReceipt(request, cashierId, deptId);
     }
 
-
-    public void setupHeaderAndFooter(List<HeaderFooter> headers, List<HeaderFooter> footers) throws NoSuchPaddingException, IOException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
-
+    @PostMapping("/setupHeaderAndFooter")
+    @ResponseBody
+    public Response<Object> setupHeaderAndFooter(List<HeaderFooter> headers, List<HeaderFooter> footers) throws NoSuchPaddingException, IOException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+        ecrSampleClient.setupHeaderAndFooter(headers, footers);
+        return new Response<>(200, null);
     }
 
-
-    public void setupHeaderLogo(byte[] bitmapBytes) throws NoSuchPaddingException, IOException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
-
+    @PostMapping("/setupHeaderLogo")
+    @ResponseBody
+    public Response<Object> setupHeaderLogo(byte[] bitmapBytes) throws NoSuchPaddingException, IOException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+        ecrSampleClient.setupHeaderLogo(bitmapBytes);
+        return new Response<>(200, null);
     }
 
+    @PostMapping("/operatorLogout")
+    @ResponseBody
     public boolean operatorLogout() throws NoSuchPaddingException, IOException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, ECRException {
-        return false;
+        return ecrSampleClient.operatorLogout();
     }
 
+    @PostMapping("/printTemplate")
+    @ResponseBody
     public PrintTemplateResponse printTemplate() throws IOException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
-        return null;
+        return ecrSampleClient.printTemplate();
     }
 
-    public void disconnect() throws IOException {
-
+    @PostMapping("/disconnect")
+    @ResponseBody
+    public Response<Object> disconnect() throws IOException {
+        ecrSampleClient.disconnect();
+        return new Response<>(200, null);
     }
 }
