@@ -56,21 +56,24 @@ public class HDMResource {
 
     @PostMapping("/printPrePaymentReceipt")
     @ResponseBody
-    public PrintReceiptResponse printPrePaymentReceipt(@RequestParam("printMode") int printMode,
-                                                       @RequestParam("paidAmount") double paidAmount,
-                                                       @RequestParam("paidAmountCard") double paidAmountCard,
-                                                       @RequestParam("useExtPOS") boolean useExtPOS) throws Exception {
-        return ecrSampleClient.printPrePaymentReceipt(printMode, paidAmount, paidAmountCard, useExtPOS);
+    public PrintReceiptResponse printPrePaymentReceipt(@RequestBody PrintReceiptRequest printReceiptRequest) throws Exception {
+        return ecrSampleClient.printPrePaymentReceipt(
+                printReceiptRequest.getMode(),
+                printReceiptRequest.getPaidAmount(),
+                printReceiptRequest.getPaidAmountCard(),
+                printReceiptRequest.isUseExtPOS());
     }
 
     @PostMapping("/printReceipt")
     @ResponseBody
-    public PrintReceiptResponse printReceipt(@RequestParam("printMode") int printMode,
-                                             @RequestParam("items") List<Item> items,
-                                             @RequestParam("paidAmount") double paidAmount,
-                                             @RequestParam("partialAmount") double partialAmount,
-                                             @RequestParam("prePaymentAmount") double prePaymentAmount) throws Exception {
-        return ecrSampleClient.printReceipt(printMode, items, paidAmount, partialAmount, prePaymentAmount);
+    public PrintReceiptResponse printReceipt(@RequestBody PrintRequets printReceiptRequest) throws Exception {
+        return ecrSampleClient.printReceipt(
+                printReceiptRequest.getMode(),
+                printReceiptRequest.getItems(),
+                printReceiptRequest.getPaidAmount(),
+                printReceiptRequest.getPartialAmount(),
+                printReceiptRequest.getPrePaymentAmount()
+        );
     }
 
     @PostMapping("/printReceiptCard")
