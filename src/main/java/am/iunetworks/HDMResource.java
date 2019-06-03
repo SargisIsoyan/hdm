@@ -49,9 +49,10 @@ public class HDMResource {
 
     @PostMapping("/operatorLogin")
     @ResponseBody
-    public OperatorLoginResponse operatorLogin(@RequestParam("cashierId") int cashierId,
+    public Response<Object>  operatorLogin(@RequestParam("cashierId") int cashierId,
                                                @RequestParam("cashierPin") String cashierPin) throws NoSuchPaddingException, IOException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, ECRException {
-        return ecrSampleClient.operatorLogin(cashierId, cashierPin);
+        ecrSampleClient.operatorLogin(cashierId, cashierPin);
+        return new Response<>(200, null);
     }
 
     @PostMapping("/printPrePaymentReceipt")
@@ -78,15 +79,17 @@ public class HDMResource {
 
     @PostMapping("/printReceiptCard")
     @ResponseBody
-    public PrintReceiptResponse printReceipt(
-            @RequestParam("printMode") int printMode,
-            @RequestParam("items") List<Item> items,
-            @RequestParam("paidAmount") double paidAmount,
-            @RequestParam("partialAmount") double partialAmount,
-            @RequestParam("prePaymentAmount") double prePaymentAmount,
-            @RequestParam("paidAmountCard") double paidAmountCard,
-            @RequestParam("useExtPOS") boolean useExtPOS) throws Exception {
-        return ecrSampleClient.printReceipt(printMode, items, paidAmount, partialAmount, prePaymentAmount, paidAmountCard, useExtPOS);
+    public PrintReceiptResponse printReceiptCard(@RequestBody PrintRequets printReceiptRequest) throws Exception {
+        return ecrSampleClient.printReceipt(
+                printReceiptRequest.getMode(),
+                printReceiptRequest.getItems(),
+                printReceiptRequest.getPaidAmount(),
+                printReceiptRequest.getPartialAmount(),
+                printReceiptRequest.getPrePaymentAmount(),
+                printReceiptRequest.getPaidAmountCard(),
+                printReceiptRequest.isUseExtPOS()
+
+        );
     }
 
     @PostMapping("/getReceipt")
