@@ -15,6 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController("/hdm")
 public class HDMResource {
 
@@ -49,8 +50,8 @@ public class HDMResource {
 
     @PostMapping("/operatorLogin")
     @ResponseBody
-    public Response<Object>  operatorLogin(@RequestParam("cashierId") int cashierId,
-                                               @RequestParam("cashierPin") String cashierPin) throws NoSuchPaddingException, IOException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, ECRException {
+    public Response<Object> operatorLogin(@RequestParam("cashierId") int cashierId,
+                                          @RequestParam("cashierPin") String cashierPin) throws NoSuchPaddingException, IOException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, ECRException {
         ecrSampleClient.operatorLogin(cashierId, cashierPin);
         return new Response<>(200, null);
     }
@@ -130,8 +131,11 @@ public class HDMResource {
 
     @PostMapping("/operatorLogout")
     @ResponseBody
-    public boolean operatorLogout() throws NoSuchPaddingException, IOException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, ECRException {
-        return ecrSampleClient.operatorLogout();
+    public Response<Object>  operatorLogout() throws NoSuchPaddingException, IOException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, ECRException {
+        if (ecrSampleClient != null) {
+            ecrSampleClient.operatorLogout();
+        }
+        return new Response<>(200, null);
     }
 
     @PostMapping("/printTemplate")
@@ -142,8 +146,10 @@ public class HDMResource {
 
     @PostMapping("/disconnect")
     @ResponseBody
-    public Response<Object> disconnect() throws IOException {
-        ecrSampleClient.disconnect();
+    public Response<Object> disconnect() throws NoSuchPaddingException, IOException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, ECRException  {
+        if (ecrSampleClient != null) {
+            ecrSampleClient.disconnect();
+        }
         return new Response<>(200, null);
     }
 }

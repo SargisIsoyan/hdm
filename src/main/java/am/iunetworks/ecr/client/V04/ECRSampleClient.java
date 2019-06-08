@@ -597,10 +597,11 @@ public class ECRSampleClient implements ECRClient {
      */
     @Override
     public void disconnect() throws IOException {
-
-        //socketChannel.shutdownInput();
-        //socketChannel.shutdownOutput();
-        //socketChannel.close();
+        if (socketChannel != null) {
+            socketChannel.shutdownInput();
+            socketChannel.shutdownOutput();
+            socketChannel.close();
+        }
     }
 
 
